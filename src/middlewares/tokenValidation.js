@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import createHttpError from 'http-errors';
 
-import { getUser } from '../repositories/usersRepository.js';
+import { findUser } from '../repositories/usersRepository.js';
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ export default async function validateToken(req, res, next) {
     }
 
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await getUser({ id });
+    const user = await findUser({ id });
 
     if (user.rowCount === 0) {
         throw createHttpError(401, 'Access denied');
