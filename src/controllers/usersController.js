@@ -1,9 +1,13 @@
+import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import createHttpError from 'http-errors';
 
 import { getUser, createUser } from '../repositories/usersRepository.js';
 
-export default async function signUp(req, res) {
+dotenv.config();
+
+export async function signUp(req, res) {
     const { name, email, password } = req.body;
 
     const user = await getUser(email);
@@ -18,4 +22,22 @@ export default async function signUp(req, res) {
     await createUser(name, email, hashedPassword);
 
     res.status(201).send('User created');
+}
+
+export async function signIn(req, res) {
+    const { email, password } = req.body;
+
+    const user = await getUser(email);
+
+    if (user.rowCount === 0) {
+        throw createHttpError(401, 'Invalid email or password');
+    }
+
+    if (!bcrypt.compareSync(password, user.rows[0].password)) {
+        throw createHttpError(401, 'Invalid email or password');
+    }
+
+    const token = jwt.sign({ id: user.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.status(200).send({ token, name: user.rows[0].name });
 }
