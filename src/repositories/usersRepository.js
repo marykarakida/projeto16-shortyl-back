@@ -1,9 +1,14 @@
 import connection from '../databases/pgsql.js';
 
-export async function getUser(condition) {
-    const [column, value] = Object.entries(condition)[0];
+export async function getUser(conditions) {
+    const params = [];
 
-    return connection.query(`SELECT * FROM users WHERE ${column}  = $1`, [value]);
+    const whereClause = Object.entries(conditions).reduce((prev, cur) => {
+        params.push(cur[1]);
+        return `${prev} ${prev === '' ? 'WHERE' : 'AND'} "${cur[0]}" = $${params.length}`;
+    }, '');
+
+    return connection.query(`SELECT * FROM users ${whereClause}`, params);
 }
 
 export async function createUser(name, email, password) {

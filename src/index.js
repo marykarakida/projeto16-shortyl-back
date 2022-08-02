@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(router);
 
 app.use((error, req, res, next) => {
+    console.log(error.code);
     const status = error.status || 500;
     const { message } = error;
 
