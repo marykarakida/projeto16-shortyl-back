@@ -45,3 +45,14 @@ export async function updateUrl(newValues, conditions) {
 
     connection.query(`UPDATE links ${setClause} ${whereClause}`, params);
 }
+
+export async function deleteLink(conditions) {
+    const params = [];
+
+    const whereClause = Object.entries(conditions).reduce((prev, cur) => {
+        params.push(cur[1]);
+        return `${prev} ${prev === '' ? 'WHERE' : 'AND'} "${cur[0]}" = $${params.length}`;
+    }, '');
+
+    connection.query(`DELETE FROM links ${whereClause}`, params);
+}

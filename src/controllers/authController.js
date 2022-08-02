@@ -26,7 +26,7 @@ export async function signUp(req, res) {
 
 export async function signIn(req, res) {
     const { email, password } = req.body;
-    const user = await getUser({ id: 'id', password: 'password' }, { email });
+    const user = await getUser({ id: 'id', name: 'name', password: 'password' }, { email });
 
     if (user.rowCount === 0) {
         throw createHttpError(401, 'Invalid email or password');

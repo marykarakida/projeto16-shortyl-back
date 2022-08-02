@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import createHttpError from 'http-errors';
 
-import { findUrl, getUrl, createUrl, updateUrl } from '../repositories/urlsRepository.js';
+import { findUrl, getUrl, createUrl, updateUrl, deleteLink } from '../repositories/urlsRepository.js';
 
 export async function getUrlById(req, res) {
     const { id } = req.params;
@@ -13,6 +13,25 @@ export async function getUrlById(req, res) {
     }
 
     res.status(200).send(link.rows[0]);
+}
+
+export async function deleteUrl(req, res) {
+    const { userId } = res.locals;
+    const { id } = req.params;
+
+    const link = await getUrl({ userId }, { id });
+
+    if (link.rowCount === 0) {
+        throw createHttpError(404, 'Cannot found specified link');
+    }
+
+    if (link.userId !== userId) {
+        throw createHttpError(401, 'Access denied');
+    }
+
+    await deleteLink({ id });
+
+    res.status(204).send('Successfully deleted entity');
 }
 
 export async function createShortUrl(req, res) {
