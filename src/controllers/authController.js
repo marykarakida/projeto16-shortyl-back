@@ -10,7 +10,7 @@ dotenv.config();
 export async function signUp(req, res) {
     const { name, email, password } = req.body;
 
-    const user = await getUser(email);
+    const user = await getUser({ email });
 
     if (user.rowCount !== 0) {
         throw createHttpError(409, 'Cannot create user');
@@ -27,7 +27,7 @@ export async function signUp(req, res) {
 export async function signIn(req, res) {
     const { email, password } = req.body;
 
-    const user = await getUser(email);
+    const user = await getUser({ email });
 
     if (user.rowCount === 0) {
         throw createHttpError(401, 'Invalid email or password');
