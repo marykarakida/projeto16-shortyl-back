@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 
 import { getUser, createUser } from '../repositories/usersRepository.js';
@@ -11,7 +12,10 @@ export default async function signUp(req, res) {
         throw createHttpError(409, 'Cannot create user');
     }
 
-    await createUser(name, email, password);
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    await createUser(name, email, hashedPassword);
 
     res.status(201).send('User created');
 }
