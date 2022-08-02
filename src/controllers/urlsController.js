@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import createHttpError from 'http-errors';
 
-import { findUrl, getUrl, createUrl } from '../repositories/urlsRepository.js';
+import { findUrl, getUrl, createUrl, updateUrl } from '../repositories/urlsRepository.js';
 
 export async function getUrlById(req, res) {
     const { id } = req.params;
@@ -30,4 +30,18 @@ export async function createShortUrl(req, res) {
     await createUrl(userId, url, shortUrl);
 
     res.status(201).send({ shortUrl });
+}
+
+export async function openShortUrl(req, res) {
+    const { shortUrl } = req.params;
+
+    const link = await getUrl({ url: 'url', viewCount: 'viewCount' }, { shortUrl });
+
+    if (link.rowCount === 0) {
+        throw createHttpError(404, 'Cannot found specified link');
+    }
+
+    await updateUrl({ viewCount: link.rows[0].viewCount + 1 }, { shortUrl });
+
+    res.redirect(link.rows[0].url);
 }
