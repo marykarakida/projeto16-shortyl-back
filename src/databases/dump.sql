@@ -13,7 +13,7 @@ CREATE TABLE links(
     "userId" int,
     "shortUrl" text NOT NULL,
     "url" text NOT NULL,
-    "viewCount" int NOT NULL DEFAULT 0,
+    "visitCount" int NOT NULL DEFAULT 0,
     "createdAt" timestamp DEFAULT NOW(),
     UNIQUE ("userId", "url"),
     FOREIGN KEY("userId")
