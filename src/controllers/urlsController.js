@@ -54,13 +54,13 @@ export async function createShortUrl(req, res) {
 export async function openShortUrl(req, res) {
     const { shortUrl } = req.params;
 
-    const link = await getUrl({ url: 'url', viewCount: 'viewCount' }, { shortUrl });
+    const link = await getUrl({ url: 'url', visitCount: 'visitCount' }, { shortUrl });
 
     if (link.rowCount === 0) {
         throw createHttpError(404, 'Cannot found specified link');
     }
 
-    await updateUrl({ viewCount: link.rows[0].viewCount + 1 }, { shortUrl });
+    await updateUrl({ visitCount: link.rows[0].visitCount + 1 }, { shortUrl });
 
     res.redirect(link.rows[0].url);
 }
