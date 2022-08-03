@@ -26,6 +26,31 @@ export async function getUrl(columns, conditions) {
     return connection.query(`SELECT ${selectList} FROM links ${whereClause}`, params);
 }
 
+export async function getUserUrls(conditions) {
+    const params = [];
+
+    const whereClause = Object.entries(conditions).reduce((prev, cur) => {
+        params.push(cur[1]);
+        return `${prev} ${prev === '' ? 'WHERE' : 'AND'} "${cur[0]}" = $${params.length}`;
+    }, '');
+
+    return connection.query(
+        `SELECT u.id, u.name, SUM(l."visitCount") AS "visitCount",
+            json_agg(json_build_object(
+                'id', l.id,
+                'shortUrl', l."shortUrl",
+                'url', l.url,
+                'visitCount', l."visitCount"
+            )) AS "shortenedUrls"
+        FROM links l
+        JOIN users u ON l."userId" = u.id
+        ${whereClause}
+        GROUP BY u.id
+        `,
+        params
+    );
+}
+
 export async function createUrl(userId, url, shortUrl) {
     connection.query('INSERT INTO links ("userId", url, "shortUrl") VALUES ($1, $2, $3)', [userId, url, shortUrl]);
 }
