@@ -81,3 +81,15 @@ export async function deleteLink(conditions) {
 
     connection.query(`DELETE FROM links ${whereClause}`, params);
 }
+
+export async function getRanking() {
+    return connection.query(
+        `SELECT u.id, u.name, COUNT(l.id)::int AS "linksCount", COALESCE(SUM(l."visitCount"), 0)::int AS "visitCount"
+        FROM links l
+        RIGHT JOIN users u ON l."userId" = u.id
+        GROUP BY u.id
+        ORDER BY "visitCount" DESC
+        LIMIT 10
+        `
+    );
+}
