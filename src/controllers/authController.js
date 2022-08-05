@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import createHttpError from 'http-errors';
 
-import { findUser, getUser, createUser } from '../repositories/usersRepository.js';
+import { findUser, createUser } from '../repositories/usersRepository.js';
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ export async function signUp(req, res) {
 
 export async function signIn(req, res) {
     const { email, password } = req.body;
-    const user = await getUser({ id: 'id', name: 'name', password: 'password' }, { email });
+    const user = await findUser({ email });
 
     if (user.rowCount === 0) {
         throw createHttpError(401, 'Invalid email or password');
