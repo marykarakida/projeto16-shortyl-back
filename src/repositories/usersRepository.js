@@ -11,21 +11,6 @@ export async function findUser(conditions) {
     return connection.query(`SELECT * FROM users ${whereClause}`, params);
 }
 
-export async function getUser(columns, conditions) {
-    const selectList = Object.entries(columns).reduce((prev, cur) => {
-        return `${prev}${prev && ','} "${cur[0]}" AS "${cur[1]}"`;
-    }, '');
-
-    const params = [];
-
-    const whereClause = Object.entries(conditions).reduce((prev, cur) => {
-        params.push(cur[1]);
-        return `${prev} ${prev === '' ? 'WHERE' : 'AND'} "${cur[0]}" = $${params.length}`;
-    }, '');
-
-    return connection.query(`SELECT ${selectList} FROM users ${whereClause}`, params);
-}
-
 export async function createUser(name, email, password) {
     connection.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3)', [name, email, password]);
 }
