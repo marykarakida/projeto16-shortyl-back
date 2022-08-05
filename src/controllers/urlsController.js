@@ -22,7 +22,10 @@ export async function deleteUrl(req, res) {
     const { userId } = res.locals;
     const { id } = req.params;
 
-    const { rowCount, rows: link } = await findUrl({ id });
+    const {
+        rowCount,
+        rows: [link],
+    } = await findUrl({ id });
 
     if (rowCount === 0) {
         throw createHttpError(404, 'Cannot found specified link');
