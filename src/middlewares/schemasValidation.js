@@ -11,7 +11,7 @@ export default function validateSchema(schema) {
         const { error } = schemas[schema].validate(req.body, { abortEarly: false });
 
         if (error) {
-            throw createHttpError(422, 'At least one field was not filled in correctly');
+            throw createHttpError(422, error);
         }
 
         next();
