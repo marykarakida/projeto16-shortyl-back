@@ -20,7 +20,7 @@ export async function getUserUrls(conditions) {
     }, '');
 
     return connection.query(
-        `SELECT u.id, u.name, SUM(l."visitCount") AS "visitCount",
+        `SELECT u.id, u.name, SUM(l."visitCount")::int AS "visitCount",
             json_agg(json_build_object(
                 'id', l.id,
                 'shortUrl', l."shortUrl",
