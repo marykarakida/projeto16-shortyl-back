@@ -71,5 +71,5 @@ export async function openShortUrl(req, res) {
 
     await updateUrl({ visitCount: link.visitCount + 1 }, { shortUrl });
 
-    res.redirect(link.url);
+    res.redirect(200, link.url);
 }

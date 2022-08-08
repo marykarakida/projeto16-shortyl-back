@@ -5,7 +5,7 @@ export default async function getUserShortendUrls(req, res) {
 
     const {
         rows: [link],
-    } = await getUserUrls({ userId });
+    } = await getUserUrls(userId);
 
     res.status(200).send(link);
 }
