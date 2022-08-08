@@ -66,7 +66,7 @@ export async function getRanking() {
         FROM links l
         RIGHT JOIN users u ON l."userId" = u.id
         GROUP BY u.id
-        ORDER BY "visitCount" DESC
+        ORDER BY "visitCount" DESC, "linksCount" DESC, name
         LIMIT 10
         `
     );
