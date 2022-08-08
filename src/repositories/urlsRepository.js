@@ -19,7 +19,7 @@ export async function getUserUrls(id) {
                 'shortUrl', l."shortUrl",
                 'url', l.url,
                 'visitCount', l."visitCount"
-            ) FROM links l WHERE l.id = $1) AS "shortenedUrls"
+            ) FROM links l WHERE l."userId" = $1) AS "shortenedUrls"
         FROM links l
         RIGHT JOIN users u ON l."userId" = u.id
         WHERE u.id = $1
