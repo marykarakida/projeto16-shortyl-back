@@ -11,28 +11,21 @@ export async function findUrl(conditions) {
     return connection.query(`SELECT * FROM links ${whereClause}`, params);
 }
 
-export async function getUserUrls(conditions) {
-    const params = [];
-
-    const whereClause = Object.entries(conditions).reduce((prev, cur) => {
-        params.push(cur[1]);
-        return `${prev} ${prev === '' ? 'WHERE' : 'AND'} "${cur[0]}" = $${params.length}`;
-    }, '');
-
+export async function getUserUrls(id) {
     return connection.query(
-        `SELECT u.id, u.name, SUM(l."visitCount") AS "visitCount",
-            json_agg(json_build_object(
+        `SELECT u.id, u.name, COALESCE(SUM(l."visitCount"), 0)::int AS "visitCount",
+            ARRAY(SELECT json_build_object(
                 'id', l.id,
                 'shortUrl', l."shortUrl",
                 'url', l.url,
                 'visitCount', l."visitCount"
-            )) AS "shortenedUrls"
+            ) FROM links l WHERE l."userId" = $1) AS "shortenedUrls"
         FROM links l
-        JOIN users u ON l."userId" = u.id
-        ${whereClause}
+        RIGHT JOIN users u ON l."userId" = u.id
+        WHERE u.id = $1
         GROUP BY u.id
         `,
-        params
+        [id]
     );
 }
 
@@ -73,7 +66,7 @@ export async function getRanking() {
         FROM links l
         RIGHT JOIN users u ON l."userId" = u.id
         GROUP BY u.id
-        ORDER BY "visitCount" DESC
+        ORDER BY "visitCount" DESC, "linksCount" DESC, name
         LIMIT 10
         `
     );
